@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 5000;
 const mongoURL = "mongodb://127.0.0.1:27017/blog";
 
 mongoose
-  .connect(process.env.CONNECTION_URL, {
+  .connect(process.env.mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -30,4 +30,3 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
