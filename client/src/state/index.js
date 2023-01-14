@@ -1,4 +1,11 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import {
+  applyMiddleware,
+  compose,
+  configureStore,
+  createSlice,
+} from "@reduxjs/toolkit";
+import thunk from "redux-thunk";
+import reducers from "../reducers/index";
 
 const authSlice = createSlice({
   name: "auth",
@@ -14,6 +21,7 @@ const authSlice = createSlice({
   },
 });
 export const authActions = authSlice.actions;
-export const store = configureStore({
-  reducer: authSlice.reducer,
-});
+export const store = configureStore(
+  { reducer: reducers },
+  compose(applyMiddleware(thunk))
+);

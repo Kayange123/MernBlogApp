@@ -1,11 +1,23 @@
-import { Box, Paper, Typography, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Toolbar,
+} from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FileBase from "react-file-base64";
-
+import { useDispatch, useSelector } from "react-redux";
+import { createPost } from "../../actions";
+import { Container } from "@material-ui/core";
 const AddBlog = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const newPost = useSelector((state) => state.posts);
+  console.log(newPost);
   const [inputs, setInputs] = useState({
     title: "",
     article: "",
@@ -18,7 +30,7 @@ const AddBlog = () => {
       article: inputs.article,
       bannerImage: inputs.imageURL,
       tags: inputs.tags,
-      user: localStorage.getItem("userId"),
+      user: localStorage.getItem("user")._id,
     });
     const data = await res.data;
 
@@ -28,7 +40,7 @@ const AddBlog = () => {
     e.preventDefault();
     sendRequest()
       .then((data) => setInputs(data))
-      .then(() => navigate("/myblogs"));
+      .then(() => navigate("/blogs"));
 
     console.log(inputs);
   };
@@ -40,13 +52,13 @@ const AddBlog = () => {
   };
   return (
     <div>
-      <Paper className="container card">
+      <Container className="container card">
         <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-          <Box className="card">
+          <Toolbar className="card">
             <Typography className="card-title mt-2">Post your blog</Typography>
             <div className="form-group">
               <FileBase
-                className="form-control mt-3"
+                className="form-control"
                 type="file"
                 multiple={false}
                 onDone={({ base64 }) =>
@@ -68,6 +80,8 @@ const AddBlog = () => {
               name="article"
               variant="outlined"
               className="form-control mt-2"
+              multiline
+              rows={4}
               fullWidth
               onChange={handleChange}
               value={inputs.article}
@@ -75,7 +89,8 @@ const AddBlog = () => {
             <TextField
               label="Tags"
               name="tags"
-              variant="outlined"
+              variant="standard"
+              placeholder="comma separated tags"
               className="form-control mt-2"
               fullWidth
               onChange={handleChange}
@@ -86,13 +101,13 @@ const AddBlog = () => {
               type="submit"
               variant={"contained"}
               className="btn btn-success mt-2"
-              size="large"
+              fullWidth
             >
               Publish
             </Button>
-          </Box>
+          </Toolbar>
         </form>
-      </Paper>
+      </Container>
     </div>
   );
 };

@@ -24,6 +24,10 @@ const blogSchema = new Schema({
     ref: "User",
     required: true,
   },
+  likes: {
+    type: [String],
+    default: [],
+  },
   likeCount: {
     type: Number,
     default: 0,

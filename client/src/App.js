@@ -1,34 +1,35 @@
-import React, { useEffect } from "react";
-import Header from "./components/Header";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+// import Header from "./components/Header";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Auth from "./components/Auth/Auth";
 import Blogs from "./components/Blogs/Blogs";
-import UserBlogs from "./components/UserBlogs";
-import BlogDetails from "./components/BlogDetails";
-import AddBlog from "./components/AddBlog";
-import { useDispatch, useSelector } from "react-redux";
-import { authActions } from "./state";
+import UserBlogs from "./components/Blogs/UserBlogs";
+import BlogDetails from "./components/Blogs/BlogDetails";
+import AddBlog from "./components/Blogs/AddBlog";
+import { useDispatch } from "react-redux";
 import PopularBlogs from "./components/Blogs/PopularBlogs/PopularBlogs";
-import Administrator from "./components/Administrator";
-import "../node_modules/bootstrap/dist/css/bootstrap.css";
+import AppBarSearch from "./components/Menu/AppBarSearch";
+import Home from "./components/Home/Home";
 
 function App() {
+  const location = useLocation();
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+
   useEffect(() => {
-    if (localStorage.getItem("userId") && localStorage.getItem("userLevel")) {
-      dispatch(authActions.login());
-    }
-  }, [dispatch]);
+    setUser(JSON.parse(localStorage.getItem("profile")));
+  }, [location, dispatch]);
+
   return (
     <React.Fragment>
       <header>
-        <Header />
+        <AppBarSearch user={user} setUser={setUser} />
       </header>
       <main>
         <Routes>
-          {!isLoggedIn ? (
+          {!user ? (
             <>
+              <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/popular" element={<PopularBlogs />} />
             </>
@@ -37,12 +38,8 @@ function App() {
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/myblogs" element={<UserBlogs />} />
               <Route path="/blogs/:id" element={<BlogDetails />} />
-
               <Route path="/blogs/add" element={<AddBlog />} />
             </>
-          )}
-          {isLoggedIn && localStorage.getItem("userLevel") === 5 && (
-            <Route path="/#/administator" element={<Administrator />} />
           )}
         </Routes>
       </main>

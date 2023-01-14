@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const BlogDetails = () => {
   const [blog, setBlog] = useState();
-  const id = useParams().id;
+  const { id } = useParams();
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({});
 
@@ -30,7 +30,7 @@ const BlogDetails = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    sendRequest().then(() => navigate("/myblogs"));
+    sendRequest().then(() => navigate("/blogs"));
   };
   useEffect(() => {
     fetchData().then((data) => {

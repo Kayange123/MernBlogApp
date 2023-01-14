@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   Card,
   CardHeader,
@@ -10,47 +9,35 @@ import {
   Box,
   CardActions,
 } from "@mui/material";
+import {
+  DeleteForever,
+  Edit,
+  ThumbUpAlt,
+  ThumbUpAltOutlined,
+} from "@material-ui/icons";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { likePost } from "../../actions";
 const Blog = ({
   blog,
   article,
   bannerImage,
-  blogId,
-  publishedAt,
   title,
   username,
   isUser,
   id,
   tags,
+  handleDelete,
 }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
 
-  const likeRequest = async () => {
-    const res = await axios
-      .patch(`http://localhost:5000/api/blogs/${id}/like`)
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    return data;
-  };
-  const deleteRequest = async () => {
-    const res = await axios
-      .delete(`http://localhost:5000/api/blogs/delete/${id}`)
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    return data;
-  };
-  const handleLike = (e) => {
-    likeRequest();
-  };
-  const handleEdit = (e) => {
-    navigate(`/blogs/${id}`);
-  };
-  const handleDelete = (e) => {
-    deleteRequest()
-      .then(() => navigate("/"))
-      .then(() => navigate("/myblogs"));
+  const handleLike = () => {
+    dispatch(likePost(id));
+    setIsLiked((prevState) => !prevState);
   };
 
   return (
@@ -66,17 +53,12 @@ const Blog = ({
       display="flex"
     >
       {isUser && (
-        <Box sx={12} sm={7} size="small" display="flex" alignItems={"right"}>
-          <Button variant="contained" onClick={handleEdit}>
-            Edit
+        <Box size="small" display="flex" alignItems={"right"}>
+          <Button variant="contained" onClick={() => navigate(`/blogs/${id}`)}>
+            <Edit />
           </Button>
-          <Button
-            variant="contained"
-            color="warning"
-            marginLeft="1px"
-            onClick={handleDelete}
-          >
-            Delete
+          <Button variant="contained" color="warning" onClick={handleDelete(id)}>
+            <DeleteForever />
           </Button>
         </Box>
       )}
@@ -85,7 +67,12 @@ const Blog = ({
         avatar={<Avatar sx={{ bgcolor: "grey" }}>{username.charAt(0)}</Avatar>}
         title={title}
       />
-      <CardMedia component="img" height="500" image={bannerImage} alt={title} />
+      <CardMedia
+        className="img-fluid"
+        component="img"
+        image={bannerImage}
+        alt={title}
+      />
       <CardContent>
         <Typography>{tags.map((tag) => `#${tag}, `)}</Typography>
         <Typography
@@ -108,9 +95,10 @@ const Blog = ({
       </CardContent>
       <CardActions>
         <Button size="small" color="primary" onClick={handleLike}>
-          {blog.likeCount} &nbsp;
-          {blog.likeCount === 0 ? " Like" : " Likes"}
+          {isLiked ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
         </Button>
+        {blog.likeCount} &nbsp;
+        {blog.likeCount === 0 ? " Like" : " Likes"}
       </CardActions>
     </Card>
   );

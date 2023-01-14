@@ -1,24 +1,22 @@
-import axios from "axios";
 import { CircularProgress } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Blog from "./Blog";
+import { useDispatch, useSelector } from "react-redux";
+import { deletePost, getPosts } from "../../actions";
 
 const Blogs = () => {
-  const [blogs, setBlogs] = useState();
-  const sendRequest = async () => {
-    const response = await axios
-      .get("http://localhost:5000/api/blogs")
-      .catch((err) => console.log(err));
-    const data = await response.data;
-    return data;
-  };
+  const dispatch = useDispatch();
+  const { blogs } = useSelector((state) => state.posts);
   useEffect(() => {
-    sendRequest().then((data) => setBlogs(data.blogs));
-  }, [blogs]);
+    dispatch(getPosts());
+  }, [dispatch]);
+  const handleDelete = (id) => {
+    dispatch(deletePost(id));
+  };
   return (
     <div>
       {blogs ? (
-        blogs.map((blog) => (
+        blogs?.map((blog) => (
           <Blog
             id={blog._id}
             blog={blog}
@@ -29,11 +27,12 @@ const Blogs = () => {
             article={blog.article}
             title={blog.title}
             username={blog.user.name}
+            handleDelete={handleDelete}
           />
         ))
       ) : (
         <div>
-          <CircularProgress margin="auto" />
+          <CircularProgress margin="auto" size={"6rem"} />
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../node_modules/bootstrap/dist/css/bootstrap.css";
+import "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,58 +13,101 @@ import {
   Typography,
 } from "@mui/material";
 import { authActions } from "../state";
+import { AddAPhoto, Home } from "@material-ui/icons";
 
-const Header = () => {
+const Header = ({ user }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const [value, setValue] = useState();
+  const logout = () => {
+    dispatch(authActions.logout());
+    localStorage.clear();
+    navigate("/popular");
+  };
   return (
-    <AppBar position="sticky" bg="white" maxWidth="lg" sx={12} sm={7}>
-      <Toolbar sx={{ background: "whitesmoke", size: "12" }}>
+    <AppBar
+      className="navbar bg-dark navbar-dark navbar-expand-lg"
+      position="sticky"
+    >
+      <Toolbar className="container">
         <div>
           <Typography
             component={Link}
             to={isLoggedIn ? "/blogs" : "/popular"}
             variant="h4"
-            align="center"
-            sx={{ color: "blue" }}
+            className="navbar-brand"
           >
-            bLoggEr
+            SokaLetu
           </Typography>
         </div>
-
-        <Box display="flex" marginLeft={"auto"} marginRight={"auto"}>
-          {isLoggedIn && (
-            <Tabs>
-              <Tab LinkComponent={Link} to="/blogs" label="All blogs" />
-              <Tab LinkComponent={Link} to="/myblogs" label="My blogs" />
-              <Tab LinkComponent={Link} to="/blogs/add" label="Add blog" />
+        <Button className="navbar-toggler" data-bs-toggle="collapse"></Button>
+        <Box className="collapse navbar-collapse">
+          {user && (
+            <Tabs
+              value={value}
+              className="navbar-nav ms-auto"
+              onChange={(e, val) => setValue(val)}
+            >
+              <Tab
+                className="nav-item nav-link"
+                LinkComponent={Link}
+                to="/blogs"
+                label={<Home />}
+              />
+              <Tab
+                className="nav-item"
+                LinkComponent={Link}
+                to="/myblogs"
+                label="My blogs"
+              />
+              <Tab
+                className="nav-item"
+                LinkComponent={Link}
+                to="/blogs/add"
+                label={<AddAPhoto />}
+              />
             </Tabs>
           )}
         </Box>
         <Box marginLeft="auto" display="flex">
-          {isLoggedIn ? (
-            <>
-              <div>
-                <Avatar>R </Avatar>
-                <Typography>{}</Typography>
-              </div>
+          {user ? (
+            <Toolbar className="dropdown">
               <Button
-                onClick={() => {
-                  dispatch(authActions.logout());
-                  navigate("/popular");
-                }}
-                LinkComponent={Link}
-                to="/popular"
-                variant="contained"
-                color="warning"
-                sx={{ margin: 1, borderRadius: 10 }}
+                className="btn btn-primary dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                Logout
+                <Avatar>R </Avatar>
               </Button>
-            </>
+              <ul className="dropdown-menu">
+                <li>
+                  <button className="dropdown-item" type="button">
+                    Profile
+                  </button>
+                </li>
+                <li>
+                  <button className="dropdown-item" type="button">
+                    Dropdown item
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    onClick={logout}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+              <div>
+                <Typography>{user.email}</Typography>
+              </div>
+            </Toolbar>
           ) : (
             <Button
+              className="btn btn-primary btn-sm"
               LinkComponent={Link}
               to="/auth"
               variant="contained"

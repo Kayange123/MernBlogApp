@@ -7,101 +7,63 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import Icon from "@material-ui/icons";
+import { RemoveRedEye, Visibility, VisibilityOff } from "@mui/icons-material";
+import { googleId } from "../../secretKeys/googleId";
 import { GoogleLogin } from "react-google-login";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { authActions } from "../../state";
-import { Container, Paper } from "@material-ui/core";
-
+import { Container, Paper, Toolbar } from "@material-ui/core";
+import { AUTH } from "../../constants/actionTypes";
+import { signin, signup } from "../../actions/auth";
+const initialState = { fullname: "", email: "", password: "" };
 const Auth = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPasword] = useState(false);
   const [loginFeedback, setLoginFeedback] = useState(null);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [inputs, setInputs] = useState({
-    fullname: "",
-    email: "",
-    password: "",
-  });
+  const [inputs, setInputs] = useState(initialState);
 
   const handleChange = (e) => {
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
-    // setLoginFeedback(null);
-  };
-
-  const sendRequest = async (type = "signin") => {
-    const response = await axios
-      .post(`http://localhost:5000/api/users/${type}`, {
-        name: inputs.fullname,
-        email: inputs.email,
-        password: inputs.password,
-      })
-      .catch((err) => {
-        setLoginFeedback(err.response.data.message);
-      });
-
-    const data = await response?.data;
-    return data;
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (isSignUp) {
-      sendRequest("signup")
-        .then((data) => {
-          localStorage.setItem("userId", data.newUser._id);
-          localStorage.setItem("userLevel", data.newUser.userLevel);
-          setLoginFeedback(data.message);
-        })
-        .then(() => dispatch(authActions.login()))
-        .then(() => navigate("/blogs"));
+      dispatch(signup(inputs, navigate));
     } else {
-      sendRequest()
-        .then((data) => {
-          localStorage.setItem("userId", data.user?._id);
-          localStorage.setItem("userLevel", data.user.userLevel);
-          setLoginFeedback(data.message);
-        })
-        .then(() => dispatch(authActions.login()))
-        .then(() => {
-          if (localStorage.getItem("userLevel") === 5) {
-            navigate("/#/administrator");
-          }
-          navigate("/blogs");
-        });
+      dispatch(signin(inputs, navigate));
     }
   };
   const handleShowPassword = () => {
     setShowPasword((PrevShowPassword) => !PrevShowPassword);
-    setTimeout(() => {
-      setShowPasword((PrevShowPassword) => !PrevShowPassword);
-    }, 1000);
   };
   const googleSuccess = async (res) => {
-    console.log(res);
+    const result = await res?.profileObj;
+    const token = await res?.token;
+    try {
+      dispatch({ type: AUTH, data: { result, token } });
+    } catch (error) {}
   };
-  const googleFailure = () => {
-    console.log("Google signin was unsuccessful, Try again later!");
+  const googleFailure = (error) => {
+    //   console.log(error);
+    //   console.log("Google signin was unsuccessful, Try again later!");
   };
   return (
     <Container component="main" maxWidth="xs">
-      <Paper elevation={3}>
+      <Paper elevation={0}>
         <form onSubmit={handleSubmit}>
           <Box className="login-box card">
-            {loginFeedback && (
-              <Box sx={{ marginBottom: "10px", color: "error" }}>
-                <div className="alert alert-danger">{loginFeedback}</div>
-              </Box>
-            )}
-            <Typography className="title">
+            <Toolbar className="title">
               {isSignUp ? "SignUp" : <Avatar></Avatar>}
-            </Typography>
+            </Toolbar>
             {isSignUp && (
               <TextField
                 name="fullname"
@@ -135,7 +97,6 @@ const Auth = () => {
               fullWidth
               type={showPassword ? "text" : "password"}
               required
-              xs={7}
               onBlur={(e) => setLoginFeedback(null)}
               label="Password"
               margin="normal"
@@ -147,7 +108,7 @@ const Auth = () => {
                       size="small"
                       color="blue"
                     >
-                      show
+                      {!showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -158,7 +119,7 @@ const Auth = () => {
             </Button>
             <div className="mt-2">
               <GoogleLogin
-                clientId="110264502437-rql7d1g2tjptjgjqdq8k328ejg2svhst.apps.googleusercontent.com"
+                clientId={googleId}
                 render={(renderProps) => (
                   <Button
                     color="primary"
@@ -178,7 +139,7 @@ const Auth = () => {
             <Button
               sx={{ marginTop: 1 }}
               variant="contained"
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={() => setIsSignUp((prevIsSignUp) => !prevIsSignUp)}
             >
               {isSignUp
                 ? "Already have account? Login"

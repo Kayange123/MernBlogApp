@@ -5,7 +5,7 @@ import User from "../models/user.js";
 export const getBlogs = async (req, res) => {
   let blogs;
   try {
-    blogs = await Blog.find().populate("user");
+    blogs = await Blog.find().sort({ _id: -1 }).populate("user");
   } catch (error) {
     console.log(error);
   }
@@ -135,18 +135,21 @@ export const getBlogsByUser = async (req, res, next) => {
 
 export const likePost = async (req, res) => {
   const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ message: "No post Found with this id" });
-  }
   try {
+    if (!req.userId)
+      return res.status(400).json({ message: "User not authenticated" });
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: "No post Found with this id" });
+    }
     const post = await Blog.findById(id);
-    const likedPost = await Blog.findByIdAndUpdate(
-      id,
-      {
-        likeCount: post.likeCount + 1,
-      },
-      { new: true }
-    );
+    const index = post.likes.findIndex((id) => id === String(req.userId));
+    if (index === -1) {
+      post.likes.push(req.userId);
+    } else {
+      post.likes.filter((id) => id !== req.userId);
+    }
+    const likedPost = await Blog.findByIdAndUpdate(id, post, { new: true });
     return res.status(200).json({ likedPost });
   } catch (error) {
     return console.log(error);

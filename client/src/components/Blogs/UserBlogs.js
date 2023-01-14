@@ -1,7 +1,7 @@
 import { CircularProgress } from "@material-ui/core";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Blog from "./Blogs/Blog";
+import Blog from "./Blog";
 
 const UserBlogs = () => {
   const id = localStorage.getItem("userId");
