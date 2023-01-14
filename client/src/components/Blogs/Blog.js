@@ -57,7 +57,11 @@ const Blog = ({
           <Button variant="contained" onClick={() => navigate(`/blogs/${id}`)}>
             <Edit />
           </Button>
-          <Button variant="contained" color="warning" onClick={handleDelete(id)}>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={handleDelete(id)}
+          >
             <DeleteForever />
           </Button>
         </Box>

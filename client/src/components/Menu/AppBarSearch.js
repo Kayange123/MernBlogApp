@@ -70,6 +70,13 @@ export default function PrimarySearchAppBar({ user, setUser }) {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  let id;
+  if (user) {
+    id = user?.result?._id;
+  } else {
+    id = null;
+  }
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -93,7 +100,10 @@ export default function PrimarySearchAppBar({ user, setUser }) {
     setUser(null);
     navigate("/");
   };
-
+  const handleProfileNavigation = () => {
+    handleMenuClose();
+    navigate(`/users/profile/${id}`);
+  };
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -111,7 +121,7 @@ export default function PrimarySearchAppBar({ user, setUser }) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={handleProfileNavigation}>
         <Avatar /> Profile
       </MenuItem>
       <MenuItem onClick={handleMenuClose}>

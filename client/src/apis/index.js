@@ -15,5 +15,7 @@ export const editPost = (id, post) => API.patch(`/blogs/update/${id}`, post);
 export const deletePost = (id) => API.delete(`/blogs/delete/${id}`);
 export const likePost = (id) => API.patch(`/blogs/${id}/like`);
 
+//User's apis
 export const signin = (postData) => API.post(`/users/signin`, postData);
 export const signup = (postData) => API.post(`/users/signup`, postData);
+export const getUserById = (id) => API.get(`/users/profile/${id}`);

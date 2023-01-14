@@ -68,9 +68,7 @@ export const signin = async (req, res, next) => {
       "MernBlogApp",
       { expiresIn: "1h" }
     );
-    return res
-      .status(200)
-      .json({ message: "Login successfull", result: existingUser, token });
+    return res.status(200).json({ result: existingUser, token });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong", error });
   }
@@ -116,4 +114,18 @@ export const makeAdmin = async (req, res) => {
     return res.status(200).json({ message: "A user is now an admin" });
   }
   return res.status(400).json({ message: "Could not make a user an admin" });
+};
+
+export const getUserById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(404).json({ message: "No user found with this id" });
+    const user = await User.findById(id);
+    if (!user)
+      return res.status(404).json({ message: "No user found with this id" });
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.log(error);
+  }
 };

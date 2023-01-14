@@ -6,3 +6,6 @@ export const LIKE = "LIKE";
 export const COMMENT = "COMMENT";
 export const AUTH = "AUTH";
 export const LOGOUT = "LOGOUT";
+
+//User's constants
+export const GET_USER_BY_ID = "GET_USER_BY_ID";

@@ -5,7 +5,6 @@ export const signin = (form, navigate) => async (dispatch) => {
     const { data } = await api.signin(form);
     dispatch({ type: AUTH, data });
     navigate("/blogs");
-    console.log(data);
   } catch (error) {
     console.log(error);
   }

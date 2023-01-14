@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import PopularBlogs from "./components/Blogs/PopularBlogs/PopularBlogs";
 import AppBarSearch from "./components/Menu/AppBarSearch";
 import Home from "./components/Home/Home";
+import User from "./components/User/User";
 
 function App() {
   const location = useLocation();
@@ -36,6 +37,7 @@ function App() {
           ) : (
             <>
               <Route path="/blogs" element={<Blogs />} />
+              <Route path="/users/profile/:id" element={<User />} />
               <Route path="/myblogs" element={<UserBlogs />} />
               <Route path="/blogs/:id" element={<BlogDetails />} />
               <Route path="/blogs/add" element={<AddBlog />} />

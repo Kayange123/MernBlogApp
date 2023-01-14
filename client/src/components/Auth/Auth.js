@@ -4,17 +4,14 @@ import {
   Button,
   TextField,
   InputAdornment,
-  Typography,
   IconButton,
 } from "@mui/material";
-import { RemoveRedEye, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { googleId } from "../../secretKeys/googleId";
 import { GoogleLogin } from "react-google-login";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { authActions } from "../../state";
 import { Container, Paper, Toolbar } from "@material-ui/core";
 import { AUTH } from "../../constants/actionTypes";
 import { signin, signup } from "../../actions/auth";
@@ -53,8 +50,8 @@ const Auth = () => {
     } catch (error) {}
   };
   const googleFailure = (error) => {
-    //   console.log(error);
-    //   console.log("Google signin was unsuccessful, Try again later!");
+    // console.log(error);
+    // console.log("Google signin was unsuccessful, Try again later!");
   };
   return (
     <Container component="main" maxWidth="xs">
