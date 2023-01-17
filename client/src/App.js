@@ -6,20 +6,20 @@ import Blogs from "./components/Blogs/Blogs";
 import UserBlogs from "./components/Blogs/UserBlogs";
 import BlogDetails from "./components/Blogs/BlogDetails";
 import AddBlog from "./components/Blogs/AddBlog";
-import { useDispatch } from "react-redux";
 import PopularBlogs from "./components/Blogs/PopularBlogs/PopularBlogs";
 import AppBarSearch from "./components/Menu/AppBarSearch";
 import Home from "./components/Home/Home";
 import User from "./components/User/User";
+import Header from "./components/Header";
 
 function App() {
   const location = useLocation();
-  const dispatch = useDispatch();
+
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("profile")));
-  }, [location, dispatch]);
+  }, [location]);
 
   return (
     <React.Fragment>

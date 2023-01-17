@@ -88,7 +88,7 @@ const Header = ({ user }) => {
                 </li>
                 <li>
                   <button className="dropdown-item" type="button">
-                    Dropdown item
+                    Settings
                   </button>
                 </li>
                 <li>

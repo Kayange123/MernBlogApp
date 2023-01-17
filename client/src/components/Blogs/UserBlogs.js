@@ -1,22 +1,7 @@
 import { CircularProgress } from "@material-ui/core";
-import axios from "axios";
-import { useEffect, useState } from "react";
 import Blog from "./Blog";
 
-const UserBlogs = () => {
-  const id = localStorage.getItem("userId");
-  const [user, setUser] = useState();
-  const sendRequest = async () => {
-    const res = await axios
-      .get(`http://localhost:5000/api/blogs/user/${id}`)
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    return data;
-  };
-  useEffect(() => {
-    sendRequest().then((data) => setUser(data.user));
-  });
-
+const UserBlogs = ({ user, blogs }) => {
   return (
     <div>
       {user && user.blogs ? (

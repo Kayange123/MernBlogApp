@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -15,12 +15,19 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { Avatar, Divider, ListItemIcon, Tooltip } from "@mui/material";
-import { Logout, PersonAdd, Settings } from "@mui/icons-material";
+import {
+  Avatar,
+  Divider,
+  ListItemButton,
+  ListItemIcon,
+  Tooltip,
+} from "@mui/material";
+import { Inbox, List, Logout, PersonAdd, Settings } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@material-ui/core";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Drawer, ListItem, ListItemText } from "@material-ui/core";
 import { LOGOUT } from "../../constants/actionTypes";
+import decode from "jwt-decode";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -69,13 +76,19 @@ export default function PrimarySearchAppBar({ user, setUser }) {
   const navigate = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  const [state, setState] = useState({ left: false });
   let id;
   if (user) {
     id = user?.result?._id;
   } else {
     id = null;
   }
+  const toggleDrawer = (open) => (e) => {
+    if (e.type === "keydown" && (e.type === "Tab" || e.type === "Shift")) {
+      return;
+    }
+    setState({ left: open });
+  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -100,6 +113,14 @@ export default function PrimarySearchAppBar({ user, setUser }) {
     setUser(null);
     navigate("/");
   };
+  useEffect(() => {
+    const token = user?.token;
+    if (token) {
+      const decodedToken = decode(token);
+      if (decodedToken.exp * 1000 < new Date().getTime()) logout();
+    }
+  });
+
   const handleProfileNavigation = () => {
     handleMenuClose();
     navigate(`/users/profile/${id}`);
@@ -124,7 +145,12 @@ export default function PrimarySearchAppBar({ user, setUser }) {
       <MenuItem onClick={handleProfileNavigation}>
         <Avatar /> Profile
       </MenuItem>
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          navigate(`/users/profile/${id}`);
+        }}
+      >
         <Avatar />
         My account
       </MenuItem>
@@ -178,10 +204,10 @@ export default function PrimarySearchAppBar({ user, setUser }) {
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
+          aria-label="show 7 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={7} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -203,27 +229,60 @@ export default function PrimarySearchAppBar({ user, setUser }) {
     </Menu>
   );
   // End of mobile Menu
-
+  const list = () => {
+    <Box
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <Inbox />
+            </ListItemIcon>
+            <ListItemText primary={"Inbox"} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <MailIcon />
+            </ListItemIcon>
+            <ListItemText />
+          </ListItemButton>
+        </ListItem>
+      </List>
+    </Box>;
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" className=" bg-dark navbar-dark">
-        <Toolbar>
+      <AppBar
+        position="sticky"
+        className="navbar navbar-expand-lg bg-dark navbar-dark"
+      >
+        <Toolbar className="container">
           {user && (
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              sx={{ mr: 1 }}
-            >
-              <MenuIcon />
-            </IconButton>
+            <Tooltip title="Side Drawer">
+              <IconButton
+                onClick={toggleDrawer(true)}
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                sx={{ mr: 1 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Tooltip>
           )}
           <Typography
             variant="h6"
             noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
+            className="navbar-brand"
+            component={Link}
+            to={user ? "/blogs" : "/popular"}
+            sx={{ cursor: "pointer", display: { xs: "none", sm: "block" } }}
           >
             SokaLetu
           </Typography>
@@ -301,6 +360,9 @@ export default function PrimarySearchAppBar({ user, setUser }) {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <Drawer anchor="left" open={state.left} onClose={toggleDrawer(false)}>
+        {list()}
+      </Drawer>
     </Box>
   );
 }

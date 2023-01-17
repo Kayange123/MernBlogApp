@@ -9,3 +9,4 @@ export const LOGOUT = "LOGOUT";
 
 //User's constants
 export const GET_USER_BY_ID = "GET_USER_BY_ID";
+export const GET_BLOGS_BY_USER = "GET_BLOGS_BY_USER";

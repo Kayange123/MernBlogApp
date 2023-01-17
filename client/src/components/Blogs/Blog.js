@@ -19,27 +19,20 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { likePost } from "../../actions";
-const Blog = ({
-  blog,
-  article,
-  bannerImage,
-  title,
-  username,
-  isUser,
-  id,
-  tags,
-  handleDelete,
-}) => {
+import { deletePost, likePost } from "../../actions";
+import { Toolbar } from "@material-ui/core";
+const Blog = ({ blog, isUser, id }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
-
+  //console.log(blog);
   const handleLike = () => {
-    dispatch(likePost(id));
+    dispatch(likePost(blog._id));
     setIsLiked((prevState) => !prevState);
   };
-
+  const handleDelete = () => {
+    dispatch(deletePost(blog._id));
+  };
   return (
     <Card
       sm={{
@@ -53,40 +46,39 @@ const Blog = ({
       display="flex"
     >
       {isUser && (
-        <Box size="small" display="flex" alignItems={"right"}>
+        <Toolbar size="small" display="flex" alignItems={"right"}>
           <Button variant="contained" onClick={() => navigate(`/blogs/${id}`)}>
             <Edit />
           </Button>
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={handleDelete(id)}
-          >
+          <Button variant="contained" color="warning" onClick={handleDelete}>
             <DeleteForever />
           </Button>
-        </Box>
+        </Toolbar>
       )}
       <CardHeader
         sx={{ color: "#000" }}
-        avatar={<Avatar sx={{ bgcolor: "grey" }}>{username.charAt(0)}</Avatar>}
-        title={title}
+        avatar={
+          <Avatar sx={{ bgcolor: "grey" }}>{blog.user.name.charAt(0)}</Avatar>
+        }
+        title={blog.title}
       />
       <CardMedia
         className="img-fluid"
         component="img"
-        image={bannerImage}
-        alt={title}
+        image={blog.bannerImage}
+        alt={blog.title}
       />
       <CardContent>
-        <Typography>{tags.map((tag) => `#${tag}, `)}</Typography>
+        <Typography>{blog.tags.map((tag) => `#${tag}, `)}</Typography>
         <Typography
           sx={{ color: "#000" }}
           variant="body2"
           color="textSecondary"
           gutterBottom
         >
-          <b onClick={() => navigate("/user/profile")}>{username}</b> {": "}
-          {article}
+          <b onClick={() => navigate("/user/profile")}>{blog.user.name}</b>{" "}
+          {": "}
+          {blog.article}
         </Typography>
         <Typography
           sx={{ color: "black", fontStyle: "italic" }}

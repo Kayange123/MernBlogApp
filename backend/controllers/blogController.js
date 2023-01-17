@@ -130,7 +130,7 @@ export const getBlogsByUser = async (req, res, next) => {
   if (!userBlogs) {
     return res.status(404).json({ message: "No blogs Found" });
   }
-  return res.status(200).json({ user: userBlogs });
+  return res.status(200).json({ userBlogs });
 };
 
 export const likePost = async (req, res) => {

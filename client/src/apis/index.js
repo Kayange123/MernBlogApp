@@ -19,3 +19,4 @@ export const likePost = (id) => API.patch(`/blogs/${id}/like`);
 export const signin = (postData) => API.post(`/users/signin`, postData);
 export const signup = (postData) => API.post(`/users/signup`, postData);
 export const getUserById = (id) => API.get(`/users/profile/${id}`);
+export const getBlogsByUser = (id) => API.get(`/blogs/user/${id}`);
